@@ -1,4 +1,4 @@
-package de.iweinzierl.timetracking.persistence;
+package de.iweinzierl.timetracking.persistence.repository;
 
 import android.content.Context;
 import de.iweinzierl.timetracking.persistence.repository.Repository;
