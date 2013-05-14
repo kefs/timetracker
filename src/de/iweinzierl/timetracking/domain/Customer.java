@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import de.iweinzierl.timetracking.utils.Logger;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public class Customer implements Serializable {
 
-    private long id;
+    private Integer id;
 
     private String name;
 
@@ -30,13 +31,14 @@ public class Customer implements Serializable {
         Preconditions.checkArgument(name.length() > 0);
 
         this.name = name;
+        this.projects = new ArrayList<Project>();
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -65,8 +67,10 @@ public class Customer implements Serializable {
      */
     public Project addProject(Project project) {
         if (project != null) {
-            projects.add(project);
-            return project;
+            if (projects.add(project)) {
+                project.setCustomerId(getId());
+                return project;
+            }
         }
 
         return null;

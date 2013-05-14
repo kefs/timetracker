@@ -23,14 +23,14 @@ public class JobFactory implements DomainFactory<Job> {
     private void setStop(Cursor cursor, Job job) {
         int idx = cursor.getColumnIndex("stop");
         if (idx >= 0) {
-            job.setStopTime(new Date(cursor.getInt(idx)));
+            job.setEnd(new Date(cursor.getInt(idx)));
         }
     }
 
     private void setStart(Cursor cursor, Job job) {
         int idx = cursor.getColumnIndex("start");
         if (idx >= 0) {
-            job.setStartTime(new Date(cursor.getInt(idx)));
+            job.setStart(new Date(cursor.getInt(idx)));
         }
     }
 
@@ -51,7 +51,7 @@ public class JobFactory implements DomainFactory<Job> {
     private void setId(Cursor cursor, Job job) {
         int idx = cursor.getColumnIndex("id");
         if (idx >= 0) {
-            job.setId(cursor.getLong(idx));
+            job.setId(cursor.getInt(idx));
         }
     }
 }

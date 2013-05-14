@@ -4,6 +4,7 @@ import de.iweinzierl.timetracking.domain.Break;
 import de.iweinzierl.timetracking.domain.Customer;
 import de.iweinzierl.timetracking.domain.Job;
 import de.iweinzierl.timetracking.domain.Project;
+import de.iweinzierl.timetracking.exception.DatabaseException;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface Repository {
     // Customer related method definitions
     //
 
-    Customer save(Customer customer);
+    Customer save(Customer customer) throws DatabaseException;
 
     Customer update(Customer customer);
 
@@ -25,7 +26,7 @@ public interface Repository {
     // Project related method definitions
     //
 
-    Project save(Project project);
+    Project save(Project project) throws DatabaseException;
 
     Project update(Project project);
 
@@ -37,7 +38,7 @@ public interface Repository {
     // Job related method definitions
     //
 
-    Job save(Job job);
+    Job save(Job job) throws DatabaseException;
 
     Job update(Job job);
 
@@ -49,7 +50,7 @@ public interface Repository {
     // Break related method definitions
     //
 
-    Break save(Break aBreak);
+    Break save(Break aBreak) throws DatabaseException;
 
     Break update(Break aBreak);
 

@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class Break implements Serializable {
 
-    private long id;
+    private Integer id;
 
     private Date start;
     private Date end;
@@ -40,11 +40,11 @@ public class Break implements Serializable {
         this.comment = comment;
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

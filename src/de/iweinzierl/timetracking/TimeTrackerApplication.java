@@ -9,6 +9,7 @@ public class TimeTrackerApplication extends Application {
     private Repository repository;
 
     public TimeTrackerApplication()  {
-        repository = RepositoryFactory.create(getApplicationContext());
+        super();
+        repository = RepositoryFactory.create(getBaseContext());
     }
 }

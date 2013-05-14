@@ -10,7 +10,7 @@ public class ProjectBuilder {
     private String identifier;
     private String comment;
 
-    private long id;
+    private Integer id;
 
     private List<Job> jobs;
 
@@ -39,7 +39,7 @@ public class ProjectBuilder {
         this.comment = comment;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -11,13 +11,14 @@ import java.util.List;
  */
 public class Job implements Serializable {
 
-    private long id;
+    private Integer id;
+    private Integer projectId;
 
     private String title;
     private String comment;
 
-    private Date startTime;
-    private Date stopTime;
+    private Date start;
+    private Date end;
 
     private List<Break> breaks;
 
@@ -25,12 +26,20 @@ public class Job implements Serializable {
         breaks = new ArrayList<Break>();
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
     }
 
     public String getTitle() {
@@ -49,20 +58,20 @@ public class Job implements Serializable {
         this.comment = comment;
     }
 
-    public Date getStartTime() {
-        return startTime;
+    public Date getStart() {
+        return start;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setStart(Date startTime) {
+        this.start = startTime;
     }
 
-    public Date getStopTime() {
-        return stopTime;
+    public Date getEnd() {
+        return end;
     }
 
-    public void setStopTime(Date stopTime) {
-        this.stopTime = stopTime;
+    public void setEnd(Date stopTime) {
+        this.end = stopTime;
     }
 
     public List<Break> getBreaks() {
@@ -105,21 +114,21 @@ public class Job implements Serializable {
     }
 
     /**
-     * Calculate the duration that the user is already working at this {@link Job}. If no {@link #stopTime} is set,
+     * Calculate the duration that the user is already working at this {@link Job}. If no {@link #end} is set,
      * the time from the beginning until now is calculated. <b>This calculation also includes the time of breaks that
      * have interrupt this Job</b>.
      *
      * @return the time in milliseconds that the user is or was working on this {@link Job}.
      */
     public long calculateDuration() {
-        if (startTime == null) {
+        if (start == null) {
             return 0l;
         }
-        else if (startTime != null && stopTime == null) {
-            return System.currentTimeMillis() - startTime.getTime() - calculateDurationOfBreaks();
+        else if (start != null && end == null) {
+            return System.currentTimeMillis() - start.getTime() - calculateDurationOfBreaks();
         }
-        else if (startTime != null && stopTime != null) {
-            return stopTime.getTime() - startTime.getTime() - calculateDurationOfBreaks();
+        else if (start != null && end != null) {
+            return end.getTime() - start.getTime() - calculateDurationOfBreaks();
         }
         else {
             throw new IllegalStateException("Illegal state of Job. Cannot calculate duration!");

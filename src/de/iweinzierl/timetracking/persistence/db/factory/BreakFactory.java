@@ -43,7 +43,7 @@ public class BreakFactory implements DomainFactory<Break> {
     private static void setId(Cursor cursor, Break b) {
         int idxId = cursor.getColumnIndex("id");
         if (idxId >= 0) {
-            b.setId(cursor.getLong(idxId));
+            b.setId(cursor.getInt(idxId));
         }
     }
 }

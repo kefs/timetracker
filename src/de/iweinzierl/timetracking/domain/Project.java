@@ -13,7 +13,8 @@ import java.util.List;
  */
 public class Project implements Serializable {
 
-    private long id;
+    private Integer id;
+    private Integer customerId;
 
     private String identifier;
     private String title;
@@ -39,12 +40,20 @@ public class Project implements Serializable {
         this.jobs = new ArrayList<Job>();
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
 
     public String getIdentifier() {
@@ -77,6 +86,14 @@ public class Project implements Serializable {
 
     public void setJobs(List<Job> jobs) {
         this.jobs = jobs;
+    }
+
+    public void addJob(Job job) {
+        if (job != null) {
+            if (jobs.add(job)) {
+                job.setProjectId(getId());
+            }
+        }
     }
 
     /**

@@ -15,40 +15,44 @@ public class SQLiteDatabaseCreator {
     public static final String[] COLS_PROJECT = new String[] {"id", "customer_id", "title", "identifier", "comment"};
     public static final String[] COLS_CUSTOMER = new String[] {"id", "name"};
 
+    public static final String[] TABLES = { TBL_CUSTOMER, TBL_PROJECT, TBL_JOB, TBL_BREAK };
+
+    public static final String DROP_TABLE_TEMPLATE = "DROP TABLE %s";
+
     public static final String CREATE_TBL_BREAK = "" +
         "CREATE TABLE " + TBL_BREAK + " (" +
-            "id      LONG PRIMARY KEY AUTOINCREMENT NOT NULL," +
-            "job_id  LONG NOT NULL," +
+            "id      INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+            "jobId   INTEGER NOT NULL," +
             "start   INTEGER NOT NULL," +
             "end     INTEGER NOT NULL," +
             "comment TEXT," +
-            "FOREIGN KEY (job_id) REFERENCES job(id)" +
+            "FOREIGN KEY (jobId) REFERENCES job(id)" +
         ");";
 
     public static final String CREATE_TBL_JOB = "" +
         "CREATE TABLE " + TBL_JOB + " (" +
-            "id          LONG PRIMARY KEY AUTOINCREMENT NOT NULL," +
-            "project_id  LONG NOT NULL," +
-            "start       INTEGER NOT NULL," +
-            "end         INTEGER NOT NULL," +
+            "id          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+            "projectId   INTEGER NOT NULL," +
+            "start       LONG NOT NULL," +
+            "end         LONG NOT NULL," +
             "title       VARCHAR(64)," +
             "comment     TEXT," +
-            "FOREIGN KEY (project_id) REFERENCES project(id)" +
+            "FOREIGN KEY (projectId) REFERENCES project(id)" +
         ");";
 
     public static final String CREATE_TBL_PROJECT = "" +
         "CREATE TABLE " + TBL_PROJECT + " (" +
-            "id          LONG PRIMARY KEY AUTOINCREMENT NOT NULL," +
-            "customer_id LONG NOT NULL," +
+            "id          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+            "customerId  INTEGER NOT NULL," +
             "title       VARCHAR(64) NOT NULL," +
             "identifier  VARCHAR(64)," +
             "comment     TEXT," +
-            "FOREIGN KEY (customer_id) REFERENCES customer(id)" +
+            "FOREIGN KEY (customerId) REFERENCES customer(id)" +
         ");";
 
     public static final String CREATE_TBL_CUSTOMER = "" +
         "CREATE TABLE " + TBL_CUSTOMER + " (" +
-            "id      LONG PRIMARY KEY AUTOINCREMENT NOT NULL," +
+            "id      INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
             "name    VARCHAR(64) NOT NULL" +
         ");";
 
@@ -72,6 +76,20 @@ public class SQLiteDatabaseCreator {
         createProjectTable();
         createJobTable();
         createBreakTable();
+    }
+
+    /**
+     * Drop all tables in this schema.
+     */
+    public void dropSchema() {
+        db.beginTransaction();
+
+        for (String table: TABLES) {
+            db.execSQL(String.format(DROP_TABLE_TEMPLATE, table));
+        }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public void updateSchema() {
