@@ -11,18 +11,19 @@ public class ProjectBuilder {
     private String comment;
 
     private Integer id;
+    private Integer customerId;
 
     private List<Job> jobs;
 
     public Project build() {
         Preconditions.checkNotNull(title);
-        Preconditions.checkNotNull(id);
 
         Project project = new Project(title);
         project.setId(id);
         project.setIdentifier(identifier);
         project.setComment(comment);
         project.setJobs(jobs);
+        project.setCustomerId(customerId);
 
         return project;
     }
@@ -45,5 +46,13 @@ public class ProjectBuilder {
 
     public void setJobs(List<Job> jobs) {
         this.jobs = jobs;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
 }
