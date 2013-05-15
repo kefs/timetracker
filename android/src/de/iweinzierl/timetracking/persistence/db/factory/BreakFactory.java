@@ -12,6 +12,7 @@ public class BreakFactory implements DomainFactory<Break> {
         Break b = new Break();
 
         setId(cursor, b);
+        setJobId(cursor, b);
         setStart(cursor, b);
         setEnd(cursor, b);
         setComment(cursor, b);
@@ -37,6 +38,13 @@ public class BreakFactory implements DomainFactory<Break> {
         int idxStart = cursor.getColumnIndex("start");
         if (idxStart >= 0) {
             b.setStart(new Date(cursor.getInt(idxStart)));
+        }
+    }
+
+    private static void setJobId(Cursor cursor, Break b) {
+        int idx = cursor.getColumnIndex("jobId");
+        if (idx > 0) {
+            b.setJobId(cursor.getInt(idx));
         }
     }
 

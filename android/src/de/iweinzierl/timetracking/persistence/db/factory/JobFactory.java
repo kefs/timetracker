@@ -12,6 +12,7 @@ public class JobFactory implements DomainFactory<Job> {
         Job job = new Job();
 
         setId(cursor, job);
+        setProjectId(cursor, job);
         setTitle(cursor, job);
         setComment(cursor, job);
         setStart(cursor, job);
@@ -45,6 +46,13 @@ public class JobFactory implements DomainFactory<Job> {
         int idx = cursor.getColumnIndex("title");
         if (idx >= 0) {
             job.setTitle(cursor.getString(idx));
+        }
+    }
+
+    private void setProjectId(Cursor cursor, Job job) {
+        int idx = cursor.getColumnIndex("projectId");
+        if (idx >= 0) {
+            job.setProjectId(cursor.getInt(idx));
         }
     }
 

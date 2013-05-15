@@ -11,6 +11,7 @@ import java.util.Date;
 public class Break implements Serializable {
 
     private Integer id;
+    private Integer jobId;
 
     private Date start;
     private Date end;
@@ -46,6 +47,14 @@ public class Break implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(Integer jobId) {
+        this.jobId = jobId;
     }
 
     public Date getStart() {

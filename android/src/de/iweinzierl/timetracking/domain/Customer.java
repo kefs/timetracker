@@ -22,8 +22,7 @@ public class Customer implements Serializable {
      * Create a new Customer with name.
      *
      * @param name The name of the new Customer. May not be null or an empty string.
-     *
-     * @throws NullPointerException if <i>name</i> is null.
+     * @throws NullPointerException     if <i>name</i> is null.
      * @throws IllegalArgumentException if <i>name</i> has zero length.
      */
     public Customer(String name) {
@@ -55,14 +54,17 @@ public class Customer implements Serializable {
     }
 
     public void setProjects(List<Project> projects) {
-        this.projects = projects;
+        if (projects != null) {
+            for (Project project : projects) {
+                addProject(project);
+            }
+        }
     }
 
     /**
      * Add a new {@link Project} to this Customer.
      *
      * @param project The new {@link Project} for this Customer. May not be null, otherwise it is not added.
-     *
      * @return the <i>project</i> that have been added or null, if nothing was added to this Customer.
      */
     public Project addProject(Project project) {
@@ -84,13 +86,13 @@ public class Customer implements Serializable {
     public long calculateDuration() {
         long total = 0l;
 
-        for (Project p: getProjects()) {
+        for (Project p : getProjects()) {
             try {
                 total += p.calculateDuration();
-            }
-            catch (IllegalStateException e) {
-                Logger.warn(this.getClass(), String.format("Unable to include duration of %s to total duration of " +
-                        "Customer.", p.getTitle()));
+            } catch (IllegalStateException e) {
+                Logger.warn(this.getClass(),
+                        String.format("Unable to include duration of %s to total duration of " + "Customer.",
+                                p.getTitle()));
             }
         }
 

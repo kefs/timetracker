@@ -3,6 +3,7 @@ package de.iweinzierl.timetracking.persistence;
 import android.content.Context;
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
+import de.iweinzierl.timetracking.domain.Break;
 import de.iweinzierl.timetracking.domain.Customer;
 import de.iweinzierl.timetracking.domain.Job;
 import de.iweinzierl.timetracking.domain.Project;
@@ -10,8 +11,10 @@ import de.iweinzierl.timetracking.exception.DatabaseException;
 import de.iweinzierl.timetracking.persistence.db.SQLiteDB;
 import de.iweinzierl.timetracking.persistence.db.SQLiteDatabaseCreator;
 import de.iweinzierl.timetracking.persistence.repository.SQLiteRepository;
+import de.iweinzierl.timetracking.util.TestUtils;
 
 import java.util.Date;
+import java.util.List;
 
 public class SQLiteRepositoryTest extends AndroidTestCase {
 
@@ -54,14 +57,11 @@ public class SQLiteRepositoryTest extends AndroidTestCase {
 
     public void testSaveProjectWithoutCustomer() throws Exception {
         Project project = new Project("New Project without Customer");
-        Project inserted = null;
 
         try {
-            inserted = sqLiteRepository.save(project);
+            sqLiteRepository.save(project);
             throw new AssertionError("DatabaseException expected - constraint violation project.customerId");
-        }
-        catch (DatabaseException e) {
-            assertTrue(inserted == null);
+        } catch (DatabaseException e) {
         }
     }
 
@@ -95,8 +95,84 @@ public class SQLiteRepositoryTest extends AndroidTestCase {
         try {
             sqLiteRepository.save(job);
             throw new AssertionError("Expected DatabaseException - constraint violation job.projectId");
+        } catch (DatabaseException e) {
         }
-        catch (DatabaseException e) {
+    }
+
+    public void testListCustomers() throws Exception {
+        int count = 5;
+
+        for (int i = 0; i < 5; i++) {
+            sqLiteRepository.save(TestUtils.createCustomer("New Customer " + i));
+        }
+
+        List<Customer> customerList = sqLiteRepository.listCustomers();
+        assertNotNull(customerList);
+        assertEquals(count, customerList.size());
+    }
+
+    public void testListProjects() throws Exception {
+        Customer customer = TestUtils.createCustomerWithProjects("New Customer With Projects", 4);
+        Customer inserted = sqLiteRepository.save(customer);
+
+        List<Project> projects = sqLiteRepository.listProjects(inserted);
+        assertNotNull(projects);
+        assertEquals(4, projects.size());
+
+        for (Project project: projects) {
+            assertNotNull(project.getId());
+            assertNotNull(project.getCustomerId());
+        }
+    }
+
+    public void testListJobs() throws Exception {
+        Customer customer = TestUtils.createCustomerWithProjectsAndJobs("New Customer With Projects and Jobs", 4, 3);
+        Customer inserted = sqLiteRepository.save(customer);
+
+        List<Project> projects = sqLiteRepository.listProjects(inserted);
+        assertNotNull(projects);
+        assertTrue(projects.size() > 0);
+
+        for (Project project: projects) {
+            List<Job> jobs = sqLiteRepository.listJobs(project);
+            assertNotNull(jobs);
+            assertTrue(jobs.size() > 0);
+
+            for (Job job: jobs) {
+                assertNotNull(job.getId());
+                assertNotNull(job.getProjectId());
+            }
+        }
+    }
+
+    public void testListBreaks() throws Exception {
+        Customer customer = TestUtils.createCustomerWithProjectsAndJobsAndBreaks(
+                "New Customer with Projects and Jobs" + " and Breaks", 3, 4, 2);
+
+        Customer inserted = sqLiteRepository.save(customer);
+
+        List<Project> projects = sqLiteRepository.listProjects(inserted);
+        assertNotNull(projects);
+        assertTrue(projects.size() == 3);
+
+        for (Project project: projects) {
+            List<Job> jobs = sqLiteRepository.listJobs(project);
+            assertNotNull(jobs);
+            assertTrue(jobs.size() == 4);
+
+            for (Job job: jobs) {
+                assertNotNull(job.getId());
+                assertNotNull(job.getProjectId());
+
+                List<Break> breaks = sqLiteRepository.listBreaks(job);
+                assertNotNull(breaks);
+                assertTrue(breaks.size() == 2);
+
+                for (Break aBreak: breaks) {
+                    assertNotNull(aBreak.getId());
+                    assertNotNull(aBreak.getJobId());
+                }
+            }
         }
     }
 }

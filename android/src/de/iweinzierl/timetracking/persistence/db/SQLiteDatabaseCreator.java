@@ -10,9 +10,9 @@ public class SQLiteDatabaseCreator {
     public static final String TBL_JOB = "job";
     public static final String TBL_BREAK = "break";
 
-    public static final String[] COLS_BREAK = new String[] {"id", "job_id", "start", "end", "comment"};
-    public static final String[] COLS_JOB = new String[] {"id", "project_id", "start", "end", "title", "comment"};
-    public static final String[] COLS_PROJECT = new String[] {"id", "customer_id", "title", "identifier", "comment"};
+    public static final String[] COLS_BREAK = new String[] {"id", "jobId", "start", "end", "comment"};
+    public static final String[] COLS_JOB = new String[] {"id", "projectId", "start", "end", "title", "comment"};
+    public static final String[] COLS_PROJECT = new String[] {"id", "customerId", "title", "identifier", "comment"};
     public static final String[] COLS_CUSTOMER = new String[] {"id", "name"};
 
     public static final String[] TABLES = { TBL_CUSTOMER, TBL_PROJECT, TBL_JOB, TBL_BREAK };

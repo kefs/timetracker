@@ -9,11 +9,27 @@ public class ProjectFactory implements DomainFactory<Project> {
     @Override
     public Project create(Cursor cursor) {
         ProjectBuilder builder = new ProjectBuilder();
+        setId(cursor, builder);
+        setCustomerId(cursor, builder);
         setComment(cursor, builder);
         setIdentifier(cursor, builder);
         setTitle(cursor, builder);
 
         return builder.build();
+    }
+
+    private void setId(Cursor cursor, ProjectBuilder builder) {
+        int idx = cursor.getColumnIndex("id");
+        if (idx >= 0) {
+            builder.setId(cursor.getInt(idx));
+        }
+    }
+
+    private void setCustomerId(Cursor cursor, ProjectBuilder builder) {
+        int idx = cursor.getColumnIndex("customerId");
+        if (idx >= 0) {
+            builder.setCustomerId(cursor.getInt(idx));
+        }
     }
 
     private void setTitle(Cursor cursor, ProjectBuilder builder) {

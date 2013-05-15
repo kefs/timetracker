@@ -10,6 +10,7 @@ public class CustomerFactory implements DomainFactory<Customer> {
     public Customer create(Cursor cursor) {
         CustomerBuilder builder = new CustomerBuilder();
         setName(cursor, builder);
+        setId(cursor, builder);
 
         return builder.build();
     }
@@ -18,6 +19,13 @@ public class CustomerFactory implements DomainFactory<Customer> {
         int idx = cursor.getColumnIndex("name");
         if (idx >= 0) {
             builder.setName(cursor.getString(idx));
+        }
+    }
+
+    private void setId(Cursor cursor, CustomerBuilder builder) {
+        int idx = cursor.getColumnIndex("id");
+        if (idx >= 0) {
+            builder.setId(cursor.getInt(idx));
         }
     }
 }

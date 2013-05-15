@@ -2,6 +2,7 @@ package de.iweinzierl.timetracking.domain;
 
 import com.google.common.base.Preconditions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectBuilder {
@@ -13,7 +14,7 @@ public class ProjectBuilder {
     private Integer id;
     private Integer customerId;
 
-    private List<Job> jobs;
+    private List<Job> jobs = new ArrayList<Job>();
 
     public Project build() {
         Preconditions.checkNotNull(title);
@@ -45,7 +46,9 @@ public class ProjectBuilder {
     }
 
     public void setJobs(List<Job> jobs) {
-        this.jobs = jobs;
+        if (jobs != null) {
+            this.jobs = jobs;
+        }
     }
 
     public Integer getCustomerId() {

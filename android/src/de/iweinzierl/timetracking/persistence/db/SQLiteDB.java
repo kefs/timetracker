@@ -58,13 +58,13 @@ public class SQLiteDB extends SQLiteOpenHelper {
     public List<Break> listBreaksByJob(long jobId) {
         SQLiteDatabase readableDB = getReadableDatabase();
         return new SQLiteHelper<Break>(readableDB, new BreakFactory()).listBy(SQLiteDatabaseCreator.TBL_BREAK,
-                SQLiteDatabaseCreator.COLS_BREAK, "job_id = ", new String[]{String.valueOf(jobId)});
+                SQLiteDatabaseCreator.COLS_BREAK, "jobId = $1", new String[]{String.valueOf(jobId)});
     }
 
     public List<Job> listJobsByProject(long projectId) {
         SQLiteDatabase readableDB = getReadableDatabase();
         List<Job> jobs = new SQLiteHelper<Job>(readableDB, new JobFactory()).listBy(SQLiteDatabaseCreator.TBL_JOB,
-                SQLiteDatabaseCreator.COLS_JOB, "project_id = ", new String[]{String.valueOf(projectId)});
+                SQLiteDatabaseCreator.COLS_JOB, "projectId = $1", new String[]{String.valueOf(projectId)});
 
         for (Job job : jobs) {
             job.setBreaks(listBreaksByJob(job.getId()));
@@ -76,7 +76,7 @@ public class SQLiteDB extends SQLiteOpenHelper {
     public List<Project> listProjectsByCustomer(long customerId) {
         SQLiteDatabase readableDB = getReadableDatabase();
         List<Project> projects = new SQLiteHelper<Project>(readableDB, new ProjectFactory()).listBy(
-                SQLiteDatabaseCreator.TBL_PROJECT, SQLiteDatabaseCreator.COLS_PROJECT, "customer_id = ",
+                SQLiteDatabaseCreator.TBL_PROJECT, SQLiteDatabaseCreator.COLS_PROJECT, "customerId = $1",
                 new String[]{String.valueOf(customerId)});
 
         for (Project project : projects) {
@@ -119,6 +119,11 @@ public class SQLiteDB extends SQLiteOpenHelper {
             job.setId(newId);
         }
 
+        for (Break aBreak: job.getBreaks()) {
+            aBreak.setJobId(newId);
+            save(aBreak);
+        }
+
         return job;
     }
 
@@ -131,6 +136,11 @@ public class SQLiteDB extends SQLiteOpenHelper {
             project.setId(newId);
         }
 
+        for (Job job: project.getJobs()) {
+            job.setProjectId(newId);
+            save(job);
+        }
+
         return project;
     }
 
@@ -141,6 +151,15 @@ public class SQLiteDB extends SQLiteOpenHelper {
 
         if (newId > 0) {
             customer.setId(newId);
+        }
+
+        for (Project project: customer.getProjects()) {
+            project.setCustomerId(newId);
+            Project proj = save(project);
+            if (proj != null) {
+                project.setId(proj.getId());
+            }
+
         }
 
         return customer;

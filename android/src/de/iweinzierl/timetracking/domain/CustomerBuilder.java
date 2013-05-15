@@ -9,12 +9,17 @@ public class CustomerBuilder {
     private String name;
 
     private List<Project> projects;
+    private Integer id;
 
     public Customer build() {
         Preconditions.checkNotNull(name);
 
         Customer customer = new Customer(name);
         customer.setProjects(projects);
+
+        if (id != null) {
+            customer.setId(id);
+        }
 
         return customer;
     }
@@ -25,5 +30,9 @@ public class CustomerBuilder {
 
     public void setProjects(List<Project> projects) {
         this.projects = projects;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }
