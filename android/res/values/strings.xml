@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TimeTracker</string>
+
+    <string name="main_label_customer">Kunde</string>
+    <string name="main_label_project">Projekt</string>
+
+    <string name="newcustomer_title">Neuen Kunden anlegen</string>
+    <string name="newproject_title">Neues Projekt anlegen</string>
+
+    <string name="menu_jobstarter_newcustomer">Neuer Kunde</string>
+    <string name="menu_jobstarter_newproject">Neues Projekt</string>
 </resources>

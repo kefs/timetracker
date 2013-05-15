@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+            android:id="@+id/jobstarter_newcustomer"
+            android:title="@string/menu_jobstarter_newcustomer"
+            android:showAsAction="ifRoom|withText"/>
+
+    <item
+            android:id="@+id/jobstarter_newproject"
+            android:title="@string/menu_jobstarter_newproject"
+            android:showAsAction="ifRoom|withText"/>
+
+</menu>
