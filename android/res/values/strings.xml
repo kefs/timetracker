@@ -4,6 +4,8 @@
 
     <string name="main_label_customer">Kunde</string>
     <string name="main_label_project">Projekt</string>
+    <string name="main_tab_startstop">Einstempeln</string>
+    <string name="main_tab_statistics">Überblick</string>
 
     <string name="newcustomer_title">Neuen Kunden anlegen</string>
     <string name="newproject_title">Neues Projekt anlegen</string>

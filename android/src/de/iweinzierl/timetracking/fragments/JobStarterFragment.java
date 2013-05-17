@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import de.iweinzierl.timetracking.R;
@@ -16,26 +15,14 @@ import de.iweinzierl.timetracking.utils.Logger;
  * New Fragment that will display selectable fields for <i>customer</i> and <i>project</i> and a button to start a
  * new <i>job</i>.
  */
-public class JobStarterFragment extends Fragment {
+public class JobStarterFragment extends Fragment implements TimeTrackerFragment<JobStarterFragment> {
 
     public interface Callback {
-        void createNewCustomer();
-        void createNewProject();
     }
 
     // FIELDS
 
     private Callback callback;
-
-    public static final JobStarterFragment createNew() {
-        return new JobStarterFragment();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,23 +50,12 @@ public class JobStarterFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.jobstarter, menu);
+        inflater.inflate(R.menu.main, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case R.id.jobstarter_newcustomer:
-                callback.createNewCustomer();
-                return true;
-
-            case R.id.jobstarter_newproject:
-                callback.createNewProject();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public JobStarterFragment create() {
+        return new JobStarterFragment();
     }
 
 }
