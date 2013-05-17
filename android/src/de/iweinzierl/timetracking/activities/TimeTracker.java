@@ -4,8 +4,10 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import de.iweinzierl.timetracking.R;
+import de.iweinzierl.timetracking.domain.Customer;
 import de.iweinzierl.timetracking.fragments.JobStarterFragment;
 import de.iweinzierl.timetracking.fragments.StatsFragment;
 import de.iweinzierl.timetracking.fragments.TimeTrackerFragment;
@@ -54,10 +56,23 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        switch (requestCode) {
+
+            case NewCustomerIntent.REQUEST:
+                Customer customer = new NewCustomerIntent(data).getCustomer();
+                addCustomer(customer);
+        }
+    }
+
+    @Override
     public void createNewCustomer() {
         Logger.debug(getClass(), "Menu item 'new customer' selected");
-        startActivity(new NewCustomerIntent(this));
-        // TODO get result of NewCustomerActivity
+        startActivityForResult(new NewCustomerIntent(this), NewCustomerIntent.REQUEST);
     }
 
     @Override
@@ -83,5 +98,10 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
 
         actionBar.addTab(startStop);
         actionBar.addTab(statistics);
+    }
+
+    private void addCustomer(Customer customer) {
+        Logger.debug(getClass(), "Request to save new customer");
+        // TODO
     }
 }

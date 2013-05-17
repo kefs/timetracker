@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/newcustomer_save" android:title="@string/menu_newcustomer_save"/>
+    <item android:id="@+id/newcustomer_cancel" android:title="@string/menu_newcustomer_cancel"/>
+
+</menu>

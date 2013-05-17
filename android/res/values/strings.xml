@@ -17,4 +17,6 @@
     <string name="menu_statistics_month">Monat</string>
     <string name="menu_statistics_year">Jahr</string>
     <string name="menu_statistics_total">Gesamt</string>
+    <string name="menu_newcustomer_save">Speichern</string>
+    <string name="menu_newcustomer_cancel">Abbrechen</string>
 </resources>
