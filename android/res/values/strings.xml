@@ -12,4 +12,9 @@
 
     <string name="menu_jobstarter_newcustomer">Neuer Kunde</string>
     <string name="menu_jobstarter_newproject">Neues Projekt</string>
+
+    <string name="menu_statistics_week">Woche</string>
+    <string name="menu_statistics_month">Monat</string>
+    <string name="menu_statistics_year">Jahr</string>
+    <string name="menu_statistics_total">Gesamt</string>
 </resources>

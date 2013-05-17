@@ -10,8 +10,16 @@ public class Logger {
         Log.d(createLogTag(source), message);
     }
 
+    public static void debug(Class source, String message, String ... args) {
+        Log.d(createLogTag(source), String.format(message, args));
+    }
+
     public static void info(Class source, String message) {
         Log.i(createLogTag(source), message);
+    }
+
+    public static void info(Class source, String message, String ... args) {
+        Log.i(createLogTag(source), String.format(message, args));
     }
 
     public static void warn(Class source, String message) {
