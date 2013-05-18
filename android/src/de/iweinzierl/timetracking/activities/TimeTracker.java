@@ -6,16 +6,24 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import com.google.common.collect.Lists;
 import de.iweinzierl.timetracking.R;
+import de.iweinzierl.timetracking.async.LoadCustomerTask;
 import de.iweinzierl.timetracking.domain.Customer;
+import de.iweinzierl.timetracking.event.CustomersChangedListener;
+import de.iweinzierl.timetracking.event.HasCustomersChangedListeners;
 import de.iweinzierl.timetracking.fragments.JobStarterFragment;
 import de.iweinzierl.timetracking.fragments.StatsFragment;
 import de.iweinzierl.timetracking.fragments.TimeTrackerFragment;
 import de.iweinzierl.timetracking.intents.NewCustomerIntent;
 import de.iweinzierl.timetracking.intents.NewProjectIntent;
+import de.iweinzierl.timetracking.persistence.repository.RepositoryFactory;
 import de.iweinzierl.timetracking.utils.Logger;
 
-public class TimeTracker extends Activity implements JobStarterFragment.Callback, StatsFragment.Callback {
+import java.util.ArrayList;
+import java.util.List;
+
+public class TimeTracker extends Activity implements JobStarterFragment.Callback, StatsFragment.Callback, HasCustomersChangedListeners {
 
     public static class TabListener<T extends TimeTrackerFragment> implements ActionBar.TabListener {
 
@@ -49,10 +57,27 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
         }
     }
 
+    private List<CustomersChangedListener> customersChangedListeners;
+    private List<Customer> customers;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        customersChangedListeners = new ArrayList<CustomersChangedListener>(2);
+
         setupActionBar(getActionBar());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        new LoadCustomerTask(this, RepositoryFactory.create(this)) {
+            @Override
+            public void onPostExecute(List<Customer> customers) {
+                setCustomers(customers);
+            }
+        }.execute();
     }
 
     @Override
@@ -87,6 +112,13 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
         // TODO
     }
 
+    @Override
+    public void registerCustomersChangedListener(CustomersChangedListener listener) {
+        if (listener != null) {
+            customersChangedListeners.add(listener);
+        }
+    }
+
     private void setupActionBar(ActionBar actionBar) {
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -100,8 +132,25 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
         actionBar.addTab(statistics);
     }
 
+    private void setCustomers(List<Customer> customers) {
+        if (customers != null) {
+            List<Customer> old = Lists.newCopyOnWriteArrayList(customers);
+            this.customers = customers;
+            notifyCustomersChanged(old, customers);
+        }
+    }
+
     private void addCustomer(Customer customer) {
-        Logger.debug(getClass(), "Request to save new customer");
-        // TODO
+        if (customer != null) {
+            List<Customer> old = Lists.newCopyOnWriteArrayList(customers);
+            customers.add(customer);
+            notifyCustomersChanged(old, customers);
+        }
+    }
+
+    private void notifyCustomersChanged(List<Customer> oldCustomers, List<Customer> newCustomers) {
+        for (CustomersChangedListener listener : customersChangedListeners) {
+            listener.onCustomersChanged(oldCustomers, newCustomers);
+        }
     }
 }

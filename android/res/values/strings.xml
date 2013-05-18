@@ -8,6 +8,8 @@
     <string name="main_tab_statistics">Überblick</string>
 
     <string name="newcustomer_title">Neuen Kunden anlegen</string>
+    <string name="newcustomer_dialog_cannotsave">Bitte füllen Sie alle notwendigen Felder aus.</string>
+
     <string name="newproject_title">Neues Projekt anlegen</string>
 
     <string name="menu_jobstarter_newcustomer">Neuer Kunde</string>

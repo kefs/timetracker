@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 import de.iweinzierl.timetracking.R;
 import de.iweinzierl.timetracking.domain.Customer;
 import de.iweinzierl.timetracking.domain.CustomerBuilder;
@@ -80,12 +81,15 @@ public class NewCustomerFragment extends Fragment implements TimeTrackerFragment
 
         try {
             customer = getCustomer();
+            callback.save(customer);
+
+            return;
         }
         catch (Exception e) {
             Logger.error(getClass(), "Unable to build new Customer", e);
         }
 
-        callback.save(customer);
+        Toast.makeText(getActivity(), R.string.newcustomer_dialog_cannotsave, Toast.LENGTH_SHORT).show();
     }
 
     private void cancel() {
