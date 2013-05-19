@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import com.google.common.collect.Lists;
 import de.iweinzierl.timetracking.R;
-import de.iweinzierl.timetracking.async.LoadCustomerTask;
 import de.iweinzierl.timetracking.domain.Customer;
 import de.iweinzierl.timetracking.domain.Project;
 import de.iweinzierl.timetracking.event.CustomersChangedListener;
@@ -20,7 +19,6 @@ import de.iweinzierl.timetracking.fragments.StatsFragment;
 import de.iweinzierl.timetracking.fragments.TimeTrackerFragment;
 import de.iweinzierl.timetracking.intents.NewCustomerIntent;
 import de.iweinzierl.timetracking.intents.NewProjectIntent;
-import de.iweinzierl.timetracking.persistence.repository.RepositoryFactory;
 import de.iweinzierl.timetracking.utils.Logger;
 
 import java.util.ArrayList;
@@ -33,16 +31,24 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
 
         private Fragment fragment;
         private Class<T> clazz;
+        private String tag;
 
-        public TabListener(Class<T> clazz) {
+        public TabListener(Class<T> clazz, String tag) {
             this.clazz = clazz;
+            this.tag = tag;
         }
 
         @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
             try {
-                fragment = clazz.newInstance().create();
-                ft.replace(android.R.id.content, fragment);
+                if (fragment == null) {
+                    fragment = clazz.newInstance().create();
+                    ft.add(android.R.id.content, fragment, tag);
+                }
+                else {
+                    ft.attach(fragment);
+                }
+
             } catch (Exception e) {
                 Logger.error(getClass(), "Unable to create instance of " + clazz.toString(), e);
             }
@@ -57,7 +63,9 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
 
         @Override
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-            // nothing to do here
+            if (fragment != null) {
+                ft.attach(fragment);
+            }
         }
     }
 
@@ -74,21 +82,9 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
         projectsChangedListeners = new ArrayList<ProjectsChangedListener>(2);
 
         customers = new ArrayList<Customer>(0);
-        projects= new ArrayList<Project>(0);
+        projects = new ArrayList<Project>(0);
 
         setupActionBar(getActionBar());
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        new LoadCustomerTask(this, RepositoryFactory.create(this)) {
-            @Override
-            public void onPostExecute(List<Customer> customers) {
-                setCustomers(customers);
-            }
-        }.execute();
     }
 
     @Override
@@ -145,28 +141,12 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         ActionBar.Tab startStop = actionBar.newTab().setText(R.string.main_tab_startstop).setTabListener(
-                new TabListener<JobStarterFragment>(JobStarterFragment.class));
+                new TabListener<JobStarterFragment>(JobStarterFragment.class, JobStarterFragment.TAG));
         ActionBar.Tab statistics = actionBar.newTab().setText(R.string.main_tab_statistics).setTabListener(
-                new TabListener<StatsFragment>(StatsFragment.class));
+                new TabListener<StatsFragment>(StatsFragment.class, StatsFragment.TAG));
 
         actionBar.addTab(startStop);
         actionBar.addTab(statistics);
-    }
-
-    private void setCustomers(List<Customer> customers) {
-        if (customers != null) {
-            List<Customer> old = Lists.newCopyOnWriteArrayList(this.customers);
-            this.customers = customers;
-            notifyCustomersChanged(old, customers);
-        }
-    }
-
-    private void setProjects(List<Project> projects) {
-        if (projects != null) {
-            List<Project> old = Lists.newArrayList(this.projects);
-            this.projects = projects;
-            notifyProjectsChanged(old, projects);
-        }
     }
 
     private void addCustomer(Customer customer) {
@@ -192,7 +172,7 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
     }
 
     private void notifyProjectsChanged(List<Project> oldProjects, List<Project> newProjects) {
-        for (ProjectsChangedListener listener: projectsChangedListeners) {
+        for (ProjectsChangedListener listener : projectsChangedListeners) {
             listener.onProjectsChanged(oldProjects, newProjects);
         }
     }

@@ -11,8 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-import com.google.common.collect.Lists;
 import de.iweinzierl.timetracking.R;
+import de.iweinzierl.timetracking.async.LoadCustomerTask;
 import de.iweinzierl.timetracking.async.LoadProjectsTask;
 import de.iweinzierl.timetracking.domain.Customer;
 import de.iweinzierl.timetracking.domain.Project;
@@ -20,7 +20,6 @@ import de.iweinzierl.timetracking.event.CustomersChangedListener;
 import de.iweinzierl.timetracking.event.HasCustomersChangedListeners;
 import de.iweinzierl.timetracking.event.HasProjectsChangedListeners;
 import de.iweinzierl.timetracking.event.ProjectsChangedListener;
-import de.iweinzierl.timetracking.persistence.repository.Repository;
 import de.iweinzierl.timetracking.persistence.repository.RepositoryFactory;
 import de.iweinzierl.timetracking.utils.Logger;
 import de.iweinzierl.timetracking.widgets.CustomerAdapter;
@@ -36,6 +35,11 @@ import java.util.List;
 public class JobStarterFragment extends Fragment implements TimeTrackerFragment<JobStarterFragment>,
         CustomersChangedListener, ProjectsChangedListener {
 
+    private static final String SAVED_CUSTOMER_POSITION = "bundle.customer.position";
+    private static final String SAVED_PROJECT_POSITION = "bundle.project.position";
+
+    public static final String TAG = "fragment.tag.jobstarter";
+
     public interface Callback {
         void createNewCustomer();
 
@@ -45,22 +49,28 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
     // FIELDS
 
     private Callback callback;
+
     private CustomerAdapter customerAdapter;
     private ProjectAdapter projectAdapter;
+
+    private int restoredCustomerPosition = -1;
+    private int restoredProjectPosition = -1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        if (savedInstanceState != null) {
+            restoredCustomerPosition = savedInstanceState.getInt(SAVED_CUSTOMER_POSITION);
+            restoredProjectPosition = savedInstanceState.getInt(SAVED_PROJECT_POSITION);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Logger.debug(getClass(), "JobStarterFragment.onCreateView()");
-
-        View layout = inflater.inflate(R.layout.fragment_jobstarter, container, false);
-
-        return layout;
+        return inflater.inflate(R.layout.fragment_jobstarter, container, false);
     }
 
     @Override
@@ -83,6 +93,19 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
         }
 
         setupAdapters();
+        loadCustomers();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveState(null);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        saveState(outState);
     }
 
     @Override
@@ -150,9 +173,33 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
         }
     }
 
+    private void saveState(Bundle bundle) {
+        restoredCustomerPosition = getCustomerPosition();
+        restoredProjectPosition = getProjectPosition();
+
+        if (bundle != null) {
+            bundle.putInt(SAVED_CUSTOMER_POSITION, getCustomerPosition());
+            bundle.putInt(SAVED_PROJECT_POSITION, getProjectPosition());
+        }
+    }
+
     private Spinner getSpinner(View container, int resId) {
         View spinner = container.findViewById(resId);
         return spinner instanceof Spinner ? (Spinner) spinner : null;
+    }
+
+    private void loadCustomers() {
+        new LoadCustomerTask(getActivity(), RepositoryFactory.create(getActivity())) {
+            @Override
+            public void onPostExecute(List<Customer> customers) {
+                customerAdapter.setCustomers(customers);
+
+                if (restoredCustomerPosition >= 0) {
+                    setCustomerPosition(restoredCustomerPosition);
+                    restoredCustomerPosition = -1;
+                }
+            }
+        }.execute();
     }
 
     private void loadProjects(int customerId) {
@@ -160,11 +207,40 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
             @Override
             protected void onPostExecute(List<Project> projects) {
                 projectAdapter.setProjects(projects);
+
+                if (restoredProjectPosition >= 0) {
+                    setProjectPosition(restoredProjectPosition);
+                    restoredProjectPosition = -1;
+                }
             }
         }.execute(customerId);
     }
 
     private void clearProjects() {
         projectAdapter.setProjects(Collections.<Project>emptyList());
+    }
+
+    private int getCustomerPosition() {
+        Spinner customer = getSpinner(getView(), R.id.customer_selector);
+        return customer != null ? customer.getSelectedItemPosition() : -1;
+    }
+
+    private void setCustomerPosition(int position) {
+        Spinner customer = getSpinner(getView(), R.id.customer_selector);
+        if (customer != null) {
+            customer.setSelection(position);
+        }
+    }
+
+    private int getProjectPosition() {
+        Spinner project = getSpinner(getView(), R.id.project_selector);
+        return project != null ? project.getSelectedItemPosition() : -1;
+    }
+
+    private void setProjectPosition(int position) {
+        Spinner project = getSpinner(getView(), R.id.project_selector);
+        if (project != null) {
+            project.setSelection(position);
+        }
     }
 }

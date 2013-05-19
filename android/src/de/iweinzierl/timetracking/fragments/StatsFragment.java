@@ -14,6 +14,8 @@ import de.iweinzierl.timetracking.utils.Logger;
 
 public class StatsFragment extends Fragment implements TimeTrackerFragment<StatsFragment> {
 
+    public static final String TAG = "fragment.tag.stats";
+
     public enum Mode {
         WEEK,
         MONTH,
