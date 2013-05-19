@@ -7,6 +7,6 @@ import de.iweinzierl.timetracking.persistence.repository.SQLiteRepository;
 public class RepositoryFactory {
 
     public static Repository create(final Context context) {
-        return new SQLiteRepository(context);
+        return SQLiteRepository.getInstance(context);
     }
 }

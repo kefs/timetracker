@@ -8,16 +8,34 @@ import de.iweinzierl.timetracking.domain.Project;
 import de.iweinzierl.timetracking.exception.DatabaseException;
 import de.iweinzierl.timetracking.persistence.db.SQLiteDB;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SQLiteRepository implements Repository {
 
-    private Context context;
+    private static SQLiteRepository INSTANCE;
 
     private SQLiteDB sqliteDB;
 
-    public SQLiteRepository(Context context) {
-        this.context = context;
+    private List<Customer> customers;
+    private Map<Integer, List<Project>> projects;
+
+    public SQLiteRepository() {
+        this.projects = new HashMap<Integer, List<Project>>(5);
+    }
+
+    public static SQLiteRepository getInstance(Context context) {
+        if (INSTANCE == null) {
+            INSTANCE = new SQLiteRepository();
+        }
+
+        INSTANCE.connect(context);
+        return INSTANCE;
+    }
+
+    private void connect(Context context) {
         this.sqliteDB = new SQLiteDB(context, SQLiteDB.DATABASE_NAME, null, SQLiteDB.DATABASE_VERSION);
     }
 
@@ -38,12 +56,28 @@ public class SQLiteRepository implements Repository {
 
     @Override
     public List<Customer> listCustomers() {
-        return sqliteDB.listCustomers();
+        if (customers == null) {
+            customers = sqliteDB.listCustomers();
+        }
+
+        return customers;
     }
 
     @Override
     public Project save(Project project) throws DatabaseException {
-        return sqliteDB.save(project);
+        Project inserted = sqliteDB.save(project);
+        if (inserted.getId() != null && inserted.getId() > 0) {
+
+            List<Project> projects = this.projects.get(inserted.getCustomerId());
+            if (projects == null) {
+                projects = new ArrayList<Project>(1);
+                this.projects.put(inserted.getCustomerId(), projects);
+            }
+
+            projects.add(inserted);
+        }
+
+        return inserted;
     }
 
     @Override
@@ -58,7 +92,13 @@ public class SQLiteRepository implements Repository {
 
     @Override
     public List<Project> listProjects(int customerId) {
-        return sqliteDB.listProjectsByCustomer(customerId);
+        List<Project> projects = this.projects.get(customerId);
+        if (projects == null) {
+            projects = sqliteDB.listProjectsByCustomer(customerId);
+            this.projects.put(customerId, projects);
+        }
+
+        return projects;
     }
 
     @Override
