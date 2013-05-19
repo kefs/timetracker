@@ -32,7 +32,7 @@ public interface Repository {
 
     void delete(Project project);
 
-    List<Project> listProjects(Customer customer);
+    List<Project> listProjects(int customerId);
 
     //
     // Job related method definitions

@@ -19,6 +19,11 @@ public class NewProjectIntent extends Intent {
         super(data);
     }
 
+    public NewProjectIntent(Project project) {
+        super();
+        putExtra(EXTRA_PROJECT, project);
+    }
+
     public Project getProject() {
         Object obj = getSerializableExtra(EXTRA_PROJECT);
         return obj instanceof Project ? (Project) obj : null;

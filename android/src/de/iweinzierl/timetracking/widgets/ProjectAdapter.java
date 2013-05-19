@@ -43,7 +43,7 @@ public class ProjectAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View view = inflater.inflate(RES_LAYOUT, parent);
+        View view = inflater.inflate(RES_LAYOUT, parent, false);
         setText(view, projects.get(position));
 
         return view;

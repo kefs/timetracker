@@ -6,14 +6,52 @@
               android:layout_height="match_parent">
 
     <TextView
-        android:text="Create new project"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/newproject_label_customer"
+        android:layout_gravity="left|center_vertical"/>
+
+    <Spinner
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/newproject_customer"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/newproject_label_title"
+        android:layout_gravity="left|center_vertical"/>
 
     <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/newproject_title"
-        android:inputType="text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_gravity="left|center_vertical"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/newproject_label_identifier"
+        android:id="@+id/textView"
+        android:layout_gravity="left|center_vertical"/>
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/newproject_identifier"
+        android:layout_gravity="left|center_vertical"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/newproject_label_comment"
+        android:layout_gravity="left|center_vertical"/>
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/newproject_comment"
+        android:layout_gravity="left|center_vertical"/>
 
 </LinearLayout>

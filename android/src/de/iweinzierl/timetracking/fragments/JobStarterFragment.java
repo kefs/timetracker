@@ -9,18 +9,24 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Spinner;
+import com.google.common.collect.Lists;
 import de.iweinzierl.timetracking.R;
+import de.iweinzierl.timetracking.async.LoadProjectsTask;
 import de.iweinzierl.timetracking.domain.Customer;
 import de.iweinzierl.timetracking.domain.Project;
 import de.iweinzierl.timetracking.event.CustomersChangedListener;
 import de.iweinzierl.timetracking.event.HasCustomersChangedListeners;
 import de.iweinzierl.timetracking.event.HasProjectsChangedListeners;
 import de.iweinzierl.timetracking.event.ProjectsChangedListener;
+import de.iweinzierl.timetracking.persistence.repository.Repository;
+import de.iweinzierl.timetracking.persistence.repository.RepositoryFactory;
 import de.iweinzierl.timetracking.utils.Logger;
 import de.iweinzierl.timetracking.widgets.CustomerAdapter;
 import de.iweinzierl.timetracking.widgets.ProjectAdapter;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -126,6 +132,17 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
 
         if (customerSpinner != null) {
             customerSpinner.setAdapter(customerAdapter);
+            customerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    loadProjects(((Customer) customerAdapter.getItem(position)).getId());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    clearProjects();
+                }
+            });
         }
 
         if (projectSpinner != null) {
@@ -136,5 +153,18 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
     private Spinner getSpinner(View container, int resId) {
         View spinner = container.findViewById(resId);
         return spinner instanceof Spinner ? (Spinner) spinner : null;
+    }
+
+    private void loadProjects(int customerId) {
+        new LoadProjectsTask(getActivity(), RepositoryFactory.create(getActivity())) {
+            @Override
+            protected void onPostExecute(List<Project> projects) {
+                projectAdapter.setProjects(projects);
+            }
+        }.execute(customerId);
+    }
+
+    private void clearProjects() {
+        projectAdapter.setProjects(Collections.<Project>emptyList());
     }
 }

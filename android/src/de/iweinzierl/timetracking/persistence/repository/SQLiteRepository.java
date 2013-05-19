@@ -57,8 +57,8 @@ public class SQLiteRepository implements Repository {
     }
 
     @Override
-    public List<Project> listProjects(Customer customer) {
-        return sqliteDB.listProjectsByCustomer(customer.getId());
+    public List<Project> listProjects(int customerId) {
+        return sqliteDB.listProjectsByCustomer(customerId);
     }
 
     @Override

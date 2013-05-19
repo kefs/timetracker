@@ -11,6 +11,10 @@
     <string name="newcustomer_dialog_cannotsave">Bitte füllen Sie alle notwendigen Felder aus.</string>
 
     <string name="newproject_title">Neues Projekt anlegen</string>
+    <string name="newproject_label_customer">Kunde:</string>
+    <string name="newproject_label_title">Names des Projekts:</string>
+    <string name="newproject_label_identifier">Kennziffer:</string>
+    <string name="newproject_label_comment">Bemerkung:</string>
 
     <string name="menu_jobstarter_newcustomer">Neuer Kunde</string>
     <string name="menu_jobstarter_newproject">Neues Projekt</string>
