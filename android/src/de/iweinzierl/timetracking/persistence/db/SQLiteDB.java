@@ -7,6 +7,7 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import de.iweinzierl.timetracking.domain.Break;
 import de.iweinzierl.timetracking.domain.Customer;
 import de.iweinzierl.timetracking.domain.Job;
@@ -39,7 +40,7 @@ public class SQLiteDB extends SQLiteOpenHelper {
     }
 
     public SQLiteDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version,
-            DatabaseErrorHandler errorHandler) {
+                    DatabaseErrorHandler errorHandler) {
         super(context, name, factory, version, errorHandler);
     }
 
@@ -56,15 +57,34 @@ public class SQLiteDB extends SQLiteOpenHelper {
     }
 
     public List<Break> listBreaksByJob(long jobId) {
-        SQLiteDatabase readableDB = getReadableDatabase();
-        return new SQLiteHelper<Break>(readableDB, new BreakFactory()).listBy(SQLiteDatabaseCreator.TBL_BREAK,
-                SQLiteDatabaseCreator.COLS_BREAK, "jobId = $1", new String[]{String.valueOf(jobId)});
+        SQLiteDatabase readableDB = null;
+
+        try {
+            readableDB = getReadableDatabase();
+
+            return new SQLiteHelper<Break>(readableDB, new BreakFactory()).listBy(SQLiteDatabaseCreator.TBL_BREAK,
+                    SQLiteDatabaseCreator.COLS_BREAK, "jobId = $1", new String[]{String.valueOf(jobId)});
+        } finally {
+            if (readableDB != null) {
+                readableDB.close();
+            }
+        }
     }
 
     public List<Job> listJobsByProject(long projectId) {
-        SQLiteDatabase readableDB = getReadableDatabase();
-        List<Job> jobs = new SQLiteHelper<Job>(readableDB, new JobFactory()).listBy(SQLiteDatabaseCreator.TBL_JOB,
-                SQLiteDatabaseCreator.COLS_JOB, "projectId = $1", new String[]{String.valueOf(projectId)});
+        SQLiteDatabase readableDB = null;
+        List<Job> jobs = Lists.newArrayList();
+
+        try {
+            readableDB = getReadableDatabase();
+
+            new SQLiteHelper<Job>(readableDB, new JobFactory()).listBy(SQLiteDatabaseCreator.TBL_JOB,
+                    SQLiteDatabaseCreator.COLS_JOB, "projectId = $1", new String[]{String.valueOf(projectId)});
+        } finally {
+            if (readableDB != null) {
+                readableDB.close();
+            }
+        }
 
         for (Job job : jobs) {
             job.setBreaks(listBreaksByJob(job.getId()));
@@ -74,10 +94,20 @@ public class SQLiteDB extends SQLiteOpenHelper {
     }
 
     public List<Project> listProjectsByCustomer(long customerId) {
-        SQLiteDatabase readableDB = getReadableDatabase();
-        List<Project> projects = new SQLiteHelper<Project>(readableDB, new ProjectFactory()).listBy(
-                SQLiteDatabaseCreator.TBL_PROJECT, SQLiteDatabaseCreator.COLS_PROJECT, "customerId = $1",
-                new String[]{String.valueOf(customerId)});
+        SQLiteDatabase readableDB = null;
+        List<Project> projects = Lists.newArrayList();
+
+        try {
+            readableDB = getReadableDatabase();
+
+            projects = new SQLiteHelper<Project>(readableDB, new ProjectFactory()).listBy(
+                    SQLiteDatabaseCreator.TBL_PROJECT, SQLiteDatabaseCreator.COLS_PROJECT, "customerId = $1",
+                    new String[]{String.valueOf(customerId)});
+        } finally {
+            if (readableDB != null) {
+                readableDB.close();
+            }
+        }
 
         for (Project project : projects) {
             project.setJobs(listJobsByProject(project.getId()));
@@ -87,9 +117,18 @@ public class SQLiteDB extends SQLiteOpenHelper {
     }
 
     public List<Customer> listCustomers() {
-        SQLiteDatabase readableDB = getReadableDatabase();
-        List<Customer> customers = new SQLiteHelper<Customer>(readableDB, new CustomerFactory()).listBy(
-                SQLiteDatabaseCreator.TBL_CUSTOMER, SQLiteDatabaseCreator.COLS_CUSTOMER, null, null);
+        SQLiteDatabase readableDB = null;
+        List<Customer> customers = Lists.newArrayList();
+
+        try {
+            readableDB = getReadableDatabase();
+            customers = new SQLiteHelper<Customer>(readableDB, new CustomerFactory()).listBy(
+                    SQLiteDatabaseCreator.TBL_CUSTOMER, SQLiteDatabaseCreator.COLS_CUSTOMER, null, null);
+        } finally {
+            if (readableDB != null) {
+                readableDB.close();
+            }
+        }
 
         for (Customer customer : customers) {
             customer.setProjects(listProjectsByCustomer(customer.getId()));
@@ -99,9 +138,18 @@ public class SQLiteDB extends SQLiteOpenHelper {
     }
 
     public Break save(Break aBreak) throws DatabaseException {
-        SQLiteDatabase writableDatabase = getWritableDatabase();
-        Integer newId = new SQLiteHelper<Break>(writableDatabase, new BreakFactory()).save(
-                SQLiteDatabaseCreator.TBL_BREAK, aBreak);
+        SQLiteDatabase writableDatabase = null;
+        Integer newId = null;
+
+        try {
+            writableDatabase = getWritableDatabase();
+            newId = new SQLiteHelper<Break>(writableDatabase, new BreakFactory()).save(
+                    SQLiteDatabaseCreator.TBL_BREAK, aBreak);
+        } finally {
+            if (writableDatabase != null) {
+                writableDatabase.close();
+            }
+        }
 
         if (newId > 0) {
             aBreak.setId(newId);
@@ -111,15 +159,25 @@ public class SQLiteDB extends SQLiteOpenHelper {
     }
 
     public Job save(Job job) throws DatabaseException {
-        SQLiteDatabase writableDatabase = getWritableDatabase();
-        Integer newId = new SQLiteHelper<Job>(writableDatabase, new JobFactory()).save(SQLiteDatabaseCreator.TBL_JOB,
+        SQLiteDatabase writableDatabase = null;
+        Integer newId = null;
+
+        try {
+            writableDatabase = getWritableDatabase();
+            newId = new SQLiteHelper<Job>(writableDatabase, new JobFactory()).save(SQLiteDatabaseCreator.TBL_JOB,
                 job);
+        }
+        finally {
+            if (writableDatabase != null) {
+                writableDatabase.close();
+            }
+        }
 
         if (newId > 0) {
             job.setId(newId);
         }
 
-        for (Break aBreak: job.getBreaks()) {
+        for (Break aBreak : job.getBreaks()) {
             aBreak.setJobId(newId);
             save(aBreak);
         }
@@ -128,15 +186,25 @@ public class SQLiteDB extends SQLiteOpenHelper {
     }
 
     public Project save(Project project) throws DatabaseException {
-        SQLiteDatabase writableDatabase = getWritableDatabase();
-        Integer newId = new SQLiteHelper<Project>(writableDatabase, new ProjectFactory()).save(
+        SQLiteDatabase writableDatabase = null;
+        Integer newId = null;
+
+        try {
+            writableDatabase = getWritableDatabase();
+            newId = new SQLiteHelper<Project>(writableDatabase, new ProjectFactory()).save(
                 SQLiteDatabaseCreator.TBL_PROJECT, project);
+        }
+        finally {
+            if (writableDatabase != null) {
+                writableDatabase.close();
+            }
+        }
 
         if (newId > 0) {
             project.setId(newId);
         }
 
-        for (Job job: project.getJobs()) {
+        for (Job job : project.getJobs()) {
             job.setProjectId(newId);
             save(job);
         }
@@ -145,15 +213,25 @@ public class SQLiteDB extends SQLiteOpenHelper {
     }
 
     public Customer save(Customer customer) throws DatabaseException {
-        SQLiteDatabase writableDatabase = getWritableDatabase();
-        Integer newId = new SQLiteHelper<Customer>(writableDatabase, new CustomerFactory()).save(
+        SQLiteDatabase writableDatabase = null;
+        Integer newId = null;
+
+        try {
+            writableDatabase = getWritableDatabase();
+            newId = new SQLiteHelper<Customer>(writableDatabase, new CustomerFactory()).save(
                 SQLiteDatabaseCreator.TBL_CUSTOMER, customer);
+        }
+        finally {
+            if (writableDatabase != null) {
+                writableDatabase.close();
+            }
+        }
 
         if (newId > 0) {
             customer.setId(newId);
         }
 
-        for (Project project: customer.getProjects()) {
+        for (Project project : customer.getProjects()) {
             project.setCustomerId(newId);
             Project proj = save(project);
             if (proj != null) {
