@@ -12,8 +12,11 @@ import android.view.ViewGroup;
 import android.widget.Spinner;
 import de.iweinzierl.timetracking.R;
 import de.iweinzierl.timetracking.domain.Customer;
+import de.iweinzierl.timetracking.domain.Project;
 import de.iweinzierl.timetracking.event.CustomersChangedListener;
 import de.iweinzierl.timetracking.event.HasCustomersChangedListeners;
+import de.iweinzierl.timetracking.event.HasProjectsChangedListeners;
+import de.iweinzierl.timetracking.event.ProjectsChangedListener;
 import de.iweinzierl.timetracking.utils.Logger;
 import de.iweinzierl.timetracking.widgets.CustomerAdapter;
 import de.iweinzierl.timetracking.widgets.ProjectAdapter;
@@ -24,7 +27,8 @@ import java.util.List;
  * New Fragment that will display selectable fields for <i>customer</i> and <i>project</i> and a button to start a
  * new <i>job</i>.
  */
-public class JobStarterFragment extends Fragment implements TimeTrackerFragment<JobStarterFragment>, CustomersChangedListener {
+public class JobStarterFragment extends Fragment implements TimeTrackerFragment<JobStarterFragment>,
+        CustomersChangedListener, ProjectsChangedListener {
 
     public interface Callback {
         void createNewCustomer();
@@ -68,6 +72,10 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
             ((HasCustomersChangedListeners) activity).registerCustomersChangedListener(this);
         }
 
+        if (activity instanceof HasProjectsChangedListeners) {
+            ((HasProjectsChangedListeners) activity).registerProjectsChangedListener(this);
+        }
+
         setupAdapters();
     }
 
@@ -100,6 +108,11 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
     @Override
     public void onCustomersChanged(List<Customer> oldCustomers, List<Customer> newCustomers) {
         customerAdapter.setCustomers(newCustomers);
+    }
+
+    @Override
+    public void onProjectsChanged(List<Project> oldProjects, List<Project> newProjects) {
+        projectAdapter.setProjects(newProjects);
     }
 
     private void setupAdapters() {

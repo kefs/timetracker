@@ -21,4 +21,7 @@
     <string name="menu_statistics_total">Gesamt</string>
     <string name="menu_newcustomer_save">Speichern</string>
     <string name="menu_newcustomer_cancel">Abbrechen</string>
+
+    <string name="actionmode_save">Speichern</string>
+    <string name="actionmode_cancel">Abbrechen</string>
 </resources>

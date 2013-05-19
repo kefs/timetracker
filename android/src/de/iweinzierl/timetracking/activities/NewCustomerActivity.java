@@ -34,6 +34,6 @@ public class NewCustomerActivity extends Activity implements  NewCustomerFragmen
 
     @Override
     public void cancel() {
-        finishActivity(Activity.RESULT_CANCELED);
+        finish();
     }
 }

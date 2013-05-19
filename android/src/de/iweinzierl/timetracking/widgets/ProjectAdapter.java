@@ -60,4 +60,11 @@ public class ProjectAdapter extends BaseAdapter {
             tv.setText(project.getTitle());
         }
     }
+
+    public void setProjects(List<Project> newProjects) {
+        if (newProjects != null) {
+            projects = newProjects;
+            notifyDataSetChanged();
+        }
+    }
 }

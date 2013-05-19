@@ -10,8 +10,11 @@ import com.google.common.collect.Lists;
 import de.iweinzierl.timetracking.R;
 import de.iweinzierl.timetracking.async.LoadCustomerTask;
 import de.iweinzierl.timetracking.domain.Customer;
+import de.iweinzierl.timetracking.domain.Project;
 import de.iweinzierl.timetracking.event.CustomersChangedListener;
 import de.iweinzierl.timetracking.event.HasCustomersChangedListeners;
+import de.iweinzierl.timetracking.event.HasProjectsChangedListeners;
+import de.iweinzierl.timetracking.event.ProjectsChangedListener;
 import de.iweinzierl.timetracking.fragments.JobStarterFragment;
 import de.iweinzierl.timetracking.fragments.StatsFragment;
 import de.iweinzierl.timetracking.fragments.TimeTrackerFragment;
@@ -23,7 +26,8 @@ import de.iweinzierl.timetracking.utils.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimeTracker extends Activity implements JobStarterFragment.Callback, StatsFragment.Callback, HasCustomersChangedListeners {
+public class TimeTracker extends Activity implements JobStarterFragment.Callback, StatsFragment.Callback,
+        HasCustomersChangedListeners, HasProjectsChangedListeners {
 
     public static class TabListener<T extends TimeTrackerFragment> implements ActionBar.TabListener {
 
@@ -60,10 +64,17 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
     private List<CustomersChangedListener> customersChangedListeners;
     private List<Customer> customers;
 
+    private List<ProjectsChangedListener> projectsChangedListeners;
+    private List<Project> projects;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         customersChangedListeners = new ArrayList<CustomersChangedListener>(2);
+        projectsChangedListeners = new ArrayList<ProjectsChangedListener>(2);
+
+        customers = new ArrayList<Customer>(0);
+        projects= new ArrayList<Project>(0);
 
         setupActionBar(getActionBar());
     }
@@ -91,6 +102,10 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
             case NewCustomerIntent.REQUEST:
                 Customer customer = new NewCustomerIntent(data).getCustomer();
                 addCustomer(customer);
+
+            case NewProjectIntent.REQUEST:
+                Project project = new NewProjectIntent(data).getProject();
+                addProject(project);
         }
     }
 
@@ -103,8 +118,7 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
     @Override
     public void createNewProject() {
         Logger.debug(getClass(), "Menu item 'new project' selected");
-        startActivity(new NewProjectIntent(this));
-        // TODO get result of NewCustomerActivity
+        startActivityForResult(new NewProjectIntent(this), NewProjectIntent.REQUEST);
     }
 
     @Override
@@ -116,6 +130,13 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
     public void registerCustomersChangedListener(CustomersChangedListener listener) {
         if (listener != null) {
             customersChangedListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void registerProjectsChangedListener(ProjectsChangedListener listener) {
+        if (listener != null) {
+            projectsChangedListeners.add(listener);
         }
     }
 
@@ -134,9 +155,17 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
 
     private void setCustomers(List<Customer> customers) {
         if (customers != null) {
-            List<Customer> old = Lists.newCopyOnWriteArrayList(customers);
+            List<Customer> old = Lists.newCopyOnWriteArrayList(this.customers);
             this.customers = customers;
             notifyCustomersChanged(old, customers);
+        }
+    }
+
+    private void setProjects(List<Project> projects) {
+        if (projects != null) {
+            List<Project> old = Lists.newArrayList(this.projects);
+            this.projects = projects;
+            notifyProjectsChanged(old, projects);
         }
     }
 
@@ -148,9 +177,23 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
         }
     }
 
+    private void addProject(Project project) {
+        if (project != null) {
+            List<Project> old = Lists.newCopyOnWriteArrayList(projects);
+            projects.add(project);
+            notifyProjectsChanged(old, projects);
+        }
+    }
+
     private void notifyCustomersChanged(List<Customer> oldCustomers, List<Customer> newCustomers) {
         for (CustomersChangedListener listener : customersChangedListeners) {
             listener.onCustomersChanged(oldCustomers, newCustomers);
+        }
+    }
+
+    private void notifyProjectsChanged(List<Project> oldProjects, List<Project> newProjects) {
+        for (ProjectsChangedListener listener: projectsChangedListeners) {
+            listener.onProjectsChanged(oldProjects, newProjects);
         }
     }
 }
