@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 import de.iweinzierl.timetracking.R;
 import de.iweinzierl.timetracking.async.LoadCustomerTask;
 import de.iweinzierl.timetracking.async.LoadProjectsTask;
@@ -81,6 +82,7 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
 
         setupStartButton(layout);
         setupStopButton(layout);
+        setupStartStopClock(layout);
 
         return layout;
     }
@@ -218,6 +220,16 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
         });
     }
 
+    private void setupStartStopClock(View container) {
+        TextView clock = getTextView(container, R.id.jobstarter_clock);
+        if (clock == null) {
+            Logger.warn(getClass(), "No clock to display duration found!");
+            return;
+        }
+
+        startStopHandler.setTextView(clock);
+    }
+
     private void saveState(Bundle bundle) {
         restoredCustomerPosition = getCustomerPosition();
         restoredProjectPosition = getProjectPosition();
@@ -231,6 +243,11 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
     private Button getButton(View container, int resId) {
         View button = container.findViewById(resId);
         return button instanceof Button ? (Button) button : null;
+    }
+
+    private TextView getTextView(View container, int resId) {
+        View textView = container.findViewById(resId);
+        return textView instanceof TextView ? (TextView) textView : null;
     }
 
     private Spinner getSpinner(View container, int resId) {

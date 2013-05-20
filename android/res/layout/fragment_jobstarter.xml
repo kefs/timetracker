@@ -5,58 +5,66 @@
               android:layout_height="fill_parent">
 
     <ScrollView
-            android:layout_weight="1"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+        android:layout_weight="1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
         <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
+            <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/main_label_customer"/>
 
-        <TextView
+            <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/main_label_project"/>
 
-        <Spinner
+            <Spinner
                 android:id="@+id/customer_selector"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"/>
 
-        <Spinner
+            <Spinner
                 android:id="@+id/project_selector"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/jobstarter_clock"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textSize="40sp"/>
 
         </LinearLayout>
 
     </ScrollView>
 
     <LinearLayout
-            android:orientation="horizontal"
-            android:layout_weight="2"
+        android:orientation="horizontal"
+        android:layout_weight="2"
+        android:layout_width="fill_parent"
+        android:layout_height="120dp">
+
+        <Button
+            android:id="@+id/jobstarter_start"
+            android:text="@string/jobstarter_start"
+            android:layout_weight="1"
             android:layout_width="fill_parent"
-            android:layout_height="120dp">
+            android:layout_height="fill_parent"/>
 
         <Button
-                android:id="@+id/jobstarter_start"
-                android:text="@string/jobstarter_start"
-                android:layout_weight="1"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"/>
-
-        <Button
-                android:id="@+id/jobstarter_stop"
-                android:text="@string/jobstarter_stop"
-                android:layout_weight="1"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"/>
+            android:id="@+id/jobstarter_stop"
+            android:text="@string/jobstarter_stop"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
 
     </LinearLayout>
 
