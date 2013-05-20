@@ -6,7 +6,6 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import com.google.common.collect.Lists;
 import de.iweinzierl.timetracking.R;
 import de.iweinzierl.timetracking.domain.Customer;
 import de.iweinzierl.timetracking.domain.Project;

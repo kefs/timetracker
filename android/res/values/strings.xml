@@ -7,6 +7,9 @@
     <string name="main_tab_startstop">Einstempeln</string>
     <string name="main_tab_statistics">Überblick</string>
 
+    <string name="jobstarter_start">Start</string>
+    <string name="jobstarter_stop">Stop</string>
+
     <string name="newcustomer_title">Neuen Kunden anlegen</string>
     <string name="newcustomer_dialog_cannotsave">Bitte füllen Sie alle notwendigen Felder aus.</string>
 

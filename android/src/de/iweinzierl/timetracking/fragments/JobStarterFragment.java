@@ -10,11 +10,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Spinner;
 import de.iweinzierl.timetracking.R;
 import de.iweinzierl.timetracking.async.LoadCustomerTask;
 import de.iweinzierl.timetracking.async.LoadProjectsTask;
 import de.iweinzierl.timetracking.domain.Customer;
+import de.iweinzierl.timetracking.domain.Job;
 import de.iweinzierl.timetracking.domain.Project;
 import de.iweinzierl.timetracking.event.CustomersChangedListener;
 import de.iweinzierl.timetracking.event.HasCustomersChangedListeners;
@@ -24,6 +26,7 @@ import de.iweinzierl.timetracking.persistence.repository.RepositoryFactory;
 import de.iweinzierl.timetracking.utils.Logger;
 import de.iweinzierl.timetracking.widgets.CustomerAdapter;
 import de.iweinzierl.timetracking.widgets.ProjectAdapter;
+import de.iweinzierl.timetracking.widgets.StartStopHandler;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,6 +53,8 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
 
     private Callback callback;
 
+    private StartStopHandler startStopHandler;
+
     private CustomerAdapter customerAdapter;
     private ProjectAdapter projectAdapter;
 
@@ -61,6 +66,8 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        startStopHandler = new StartStopHandler(getActivity());
+
         if (savedInstanceState != null) {
             restoredCustomerPosition = savedInstanceState.getInt(SAVED_CUSTOMER_POSITION);
             restoredProjectPosition = savedInstanceState.getInt(SAVED_PROJECT_POSITION);
@@ -70,7 +77,12 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Logger.debug(getClass(), "JobStarterFragment.onCreateView()");
-        return inflater.inflate(R.layout.fragment_jobstarter, container, false);
+        View layout = inflater.inflate(R.layout.fragment_jobstarter, container, false);
+
+        setupStartButton(layout);
+        setupStopButton(layout);
+
+        return layout;
     }
 
     @Override
@@ -173,6 +185,39 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
         }
     }
 
+    private void setupStartButton(View container) {
+        Button start = getButton(container, R.id.jobstarter_start);
+        if (start == null) {
+            Logger.warn(getClass(), "No start button found!");
+            return;
+        }
+
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getProjectId() != null && getProjectId() > 0) {
+                    startStopHandler.start(getProjectId());
+                }
+            }
+        });
+    }
+
+    private void setupStopButton(View container) {
+        Button stop = getButton(container, R.id.jobstarter_stop);
+        if (stop == null) {
+            Logger.warn(getClass(), "No stop button found!");
+            return;
+        }
+
+        stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Job job = startStopHandler.stop();
+                // TODO process new job
+            }
+        });
+    }
+
     private void saveState(Bundle bundle) {
         restoredCustomerPosition = getCustomerPosition();
         restoredProjectPosition = getProjectPosition();
@@ -181,6 +226,11 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
             bundle.putInt(SAVED_CUSTOMER_POSITION, getCustomerPosition());
             bundle.putInt(SAVED_PROJECT_POSITION, getProjectPosition());
         }
+    }
+
+    private Button getButton(View container, int resId) {
+        View button = container.findViewById(resId);
+        return button instanceof Button ? (Button) button : null;
     }
 
     private Spinner getSpinner(View container, int resId) {
@@ -242,5 +292,14 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
         if (project != null) {
             project.setSelection(position);
         }
+    }
+
+    private Integer getProjectId() {
+        Spinner projectSpinner = getSpinner(getView(), R.id.project_selector);
+        if (projectSpinner != null) {
+            return ((Project) projectSpinner.getSelectedItem()).getId();
+        }
+
+        return null;
     }
 }

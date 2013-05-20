@@ -4,24 +4,60 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
 
-    <TextView
+    <ScrollView
+            android:layout_weight="1"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/main_label_customer"/>
+            android:layout_height="fill_parent">
 
-    <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/main_label_project"/>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
 
-    <Spinner
-            android:id="@+id/customer_selector"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"/>
+        <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/main_label_customer"/>
 
-    <Spinner
-            android:id="@+id/project_selector"
+        <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/main_label_project"/>
+
+        <Spinner
+                android:id="@+id/customer_selector"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"/>
+
+        <Spinner
+                android:id="@+id/project_selector"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="2"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="120dp">
+
+        <Button
+                android:id="@+id/jobstarter_start"
+                android:text="@string/jobstarter_start"
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"/>
+
+        <Button
+                android:id="@+id/jobstarter_stop"
+                android:text="@string/jobstarter_stop"
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"/>
+
+    </LinearLayout>
 
 </LinearLayout>
