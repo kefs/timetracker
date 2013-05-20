@@ -56,6 +56,13 @@ public class CustomerAdapter extends BaseAdapter {
         }
     }
 
+    public void add(Customer customer) {
+        if (customer != null) {
+            customers.add(customer);
+            notifyDataSetChanged();
+        }
+    }
+
     private TextView getTextView(View container, int resId) {
         View child = container.findViewById(resId);
         return child instanceof TextView ? (TextView) child : null;

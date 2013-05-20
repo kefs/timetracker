@@ -41,7 +41,15 @@ public class SQLiteRepository implements Repository {
 
     @Override
     public Customer save(Customer customer) throws DatabaseException {
-        return sqliteDB.save(customer);
+        Customer inserted = sqliteDB.save(customer);
+
+        if (inserted != null && inserted.getId() != null && inserted.getId() > 0) {
+            synchronized (customers) {
+                customers.add(inserted);
+            }
+        }
+
+        return inserted;
     }
 
     @Override
@@ -68,13 +76,15 @@ public class SQLiteRepository implements Repository {
         Project inserted = sqliteDB.save(project);
         if (inserted.getId() != null && inserted.getId() > 0) {
 
-            List<Project> projects = this.projects.get(inserted.getCustomerId());
-            if (projects == null) {
-                projects = new ArrayList<Project>(1);
-                this.projects.put(inserted.getCustomerId(), projects);
-            }
+            synchronized (this.projects) {
+                List<Project> projects = this.projects.get(inserted.getCustomerId());
+                if (projects == null) {
+                    projects = new ArrayList<Project>(1);
+                    this.projects.put(inserted.getCustomerId(), projects);
+                }
 
-            projects.add(inserted);
+                projects.add(inserted);
+            }
         }
 
         return inserted;

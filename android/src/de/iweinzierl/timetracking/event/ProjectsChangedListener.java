@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ProjectsChangedListener {
 
-    void onProjectsChanged(List<Project> oldProjects, List<Project> newProjects);
+    void onProjectAdded(Project projected);
 }

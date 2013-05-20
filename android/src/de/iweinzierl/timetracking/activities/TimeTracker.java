@@ -44,8 +44,7 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
                 if (fragment == null) {
                     fragment = clazz.newInstance().create();
                     ft.add(android.R.id.content, fragment, tag);
-                }
-                else {
+                } else {
                     ft.attach(fragment);
                 }
 
@@ -70,19 +69,13 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
     }
 
     private List<CustomersChangedListener> customersChangedListeners;
-    private List<Customer> customers;
-
     private List<ProjectsChangedListener> projectsChangedListeners;
-    private List<Project> projects;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         customersChangedListeners = new ArrayList<CustomersChangedListener>(2);
         projectsChangedListeners = new ArrayList<ProjectsChangedListener>(2);
-
-        customers = new ArrayList<Customer>(0);
-        projects = new ArrayList<Project>(0);
 
         setupActionBar(getActionBar());
     }
@@ -97,11 +90,11 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
 
             case NewCustomerIntent.REQUEST:
                 Customer customer = new NewCustomerIntent(data).getCustomer();
-                addCustomer(customer);
+                addedCustomer(customer);
 
             case NewProjectIntent.REQUEST:
                 Project project = new NewProjectIntent(data).getProject();
-                addProject(project);
+                addedProject(project);
         }
     }
 
@@ -124,14 +117,14 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
 
     @Override
     public void registerCustomersChangedListener(CustomersChangedListener listener) {
-        if (listener != null) {
+        if (listener != null && customersChangedListeners.indexOf(listener) < 0) {
             customersChangedListeners.add(listener);
         }
     }
 
     @Override
     public void registerProjectsChangedListener(ProjectsChangedListener listener) {
-        if (listener != null) {
+        if (listener != null && projectsChangedListeners.indexOf(listener) < 0) {
             projectsChangedListeners.add(listener);
         }
     }
@@ -149,31 +142,25 @@ public class TimeTracker extends Activity implements JobStarterFragment.Callback
         actionBar.addTab(statistics);
     }
 
-    private void addCustomer(Customer customer) {
+    private void addedCustomer(Customer customer) {
         if (customer != null) {
-            List<Customer> old = Lists.newCopyOnWriteArrayList(customers);
-            customers.add(customer);
-            notifyCustomersChanged(old, customers);
+            notifyCustomerAdded(customer);
         }
     }
 
-    private void addProject(Project project) {
-        if (project != null) {
-            List<Project> old = Lists.newCopyOnWriteArrayList(projects);
-            projects.add(project);
-            notifyProjectsChanged(old, projects);
-        }
+    private void addedProject(Project project) {
+        notifyProjectAdded(project);
     }
 
-    private void notifyCustomersChanged(List<Customer> oldCustomers, List<Customer> newCustomers) {
+    private void notifyCustomerAdded(Customer customer) {
         for (CustomersChangedListener listener : customersChangedListeners) {
-            listener.onCustomersChanged(oldCustomers, newCustomers);
+            listener.onCustomerAdded(customer);
         }
     }
 
-    private void notifyProjectsChanged(List<Project> oldProjects, List<Project> newProjects) {
+    private void notifyProjectAdded(Project project) {
         for (ProjectsChangedListener listener : projectsChangedListeners) {
-            listener.onProjectsChanged(oldProjects, newProjects);
+            listener.onProjectAdded(project);
         }
     }
 }

@@ -260,7 +260,7 @@ public class SQLiteDB extends SQLiteOpenHelper {
             int count = cursor.getCount();
             if (count <= 0) {
                 Logger.debug(getClass(), String.format("No object from table '%s' found.", table));
-                return Collections.emptyList();
+                return Lists.newArrayList();
             }
 
             List<T> results = new ArrayList<T>(count);

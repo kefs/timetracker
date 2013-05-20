@@ -135,13 +135,13 @@ public class JobStarterFragment extends Fragment implements TimeTrackerFragment<
     }
 
     @Override
-    public void onCustomersChanged(List<Customer> oldCustomers, List<Customer> newCustomers) {
-        customerAdapter.setCustomers(newCustomers);
+    public void onCustomerAdded(Customer customer) {
+        customerAdapter.add(customer);
     }
 
     @Override
-    public void onProjectsChanged(List<Project> oldProjects, List<Project> newProjects) {
-        projectAdapter.setProjects(newProjects);
+    public void onProjectAdded(Project project) {
+        projectAdapter.add(project);
     }
 
     private void setupAdapters() {

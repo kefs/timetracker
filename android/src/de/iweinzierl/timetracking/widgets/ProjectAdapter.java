@@ -61,9 +61,26 @@ public class ProjectAdapter extends BaseAdapter {
         }
     }
 
+    public Integer getCustomerId() {
+        for (Project project: projects) {
+            if (project.getCustomerId() != null && project.getCustomerId() < 0) {
+                return project.getCustomerId();
+            }
+        }
+
+        return null;
+    }
+
     public void setProjects(List<Project> newProjects) {
         if (newProjects != null) {
             projects = newProjects;
+            notifyDataSetChanged();
+        }
+    }
+
+    public void add(Project project) {
+        if (project != null && projects.indexOf(project) < 0 && getCustomerId() == project.getCustomerId()) {
+            projects.add(project);
             notifyDataSetChanged();
         }
     }
